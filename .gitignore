@@ -28,3 +28,23 @@ Thumbs.db
 output/
 *.log
 *.tmp
+
+# Thesis, defense, and writing-helper artifacts kept locally but not uploaded to GitHub
+chapters/
+plan/
+tools/
+论文插图/
+abstract_check.md
+generate_chapter5.js
+generate_defense_full_learning_manual.js
+generate_docx.js
+generate_project_prompt_doc.js
+generate_thesis_outline.js
+generate_use_case_diagrams.js
+农产品产销对接平台毕业论文.docx
+农产品产销对接平台论文大纲.docx
+农产品产销对接平台项目梳理与AI提示.docx
+毕业答辩背诵提纲-张博源.docx
+系统测试汇总表.xlsx
+/package.json
+/package-lock.json
