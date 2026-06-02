@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.SupplyMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Supply">
+        select supply.*, user.name as supplierName, category.name as categoryName from supply
+        left join user on supply.supplier_id = user.id
+        left join category on supply.category_id = category.id
+        <where>
+            <if test="productName != null and productName != ''"> and supply.product_name like concat('%', #{productName}, '%')</if>
+            <if test="categoryId != null"> and supply.category_id = #{categoryId}</if>
+            <if test="originProvince != null and originProvince != ''"> and supply.origin_province = #{originProvince}</if>
+            <if test="supplierId != null"> and supply.supplier_id = #{supplierId}</if>
+            <if test="status != null and status != ''"> and supply.status = #{status}</if>
+        </where>
+        order by supply.id desc
+    </select>
+
+    <insert id="insert" parameterType="com.example.entity.Supply" useGeneratedKeys="true" keyProperty="id">
+        insert into supply(supplier_id, product_name, category_id, img, origin_province, origin_place, unit, price, total_quantity, quantity, available_time, contact, status, create_time)
+        values (#{supplierId}, #{productName}, #{categoryId}, #{img}, #{originProvince}, #{originPlace}, #{unit}, #{price}, #{totalQuantity}, #{quantity}, #{availableTime}, #{contact}, #{status}, #{createTime})
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Supply">
+        update supply set supplier_id = #{supplierId}, product_name = #{productName}, category_id = #{categoryId},
+        img = #{img}, origin_province = #{originProvince}, origin_place = #{originPlace}, unit = #{unit}, price = #{price}, total_quantity = #{totalQuantity}, quantity = #{quantity},
+        available_time = #{availableTime}, contact = #{contact}, status = #{status}, create_time = #{createTime}
+        where id = #{id}
+    </update>
+
+</mapper>

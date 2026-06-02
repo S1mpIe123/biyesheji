@@ -1,0 +1,30 @@
+# Node dependencies and package manager cache
+node_modules/
+farm_system/vue/node_modules/
+
+# Frontend build outputs
+dist/
+farm_system/vue/dist/
+
+# Java build outputs
+target/
+farm_system/springboot/target/
+
+# Local MySQL physical table files; keep SQL scripts in the repository instead.
+数据库表/
+*.ibd
+
+# Local runtime configuration with private database credentials
+farm_system/springboot/src/main/resources/application.yml
+
+# IDE and OS generated files
+.claude/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+output/
+*.log
+*.tmp

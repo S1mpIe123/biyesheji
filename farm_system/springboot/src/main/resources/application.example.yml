@@ -1,0 +1,31 @@
+# 后端服务模块：配置 Spring Boot 服务端口、数据库连接、MyBatis 映射和上传文件访问地址。
+# 使用方法：复制本文件为 application.yml，并把数据库账号、密码、库名改成你本机环境。
+server:
+  # Spring Boot 后端接口监听端口，前端请求接口时需要与这里保持一致。
+  port: 9090
+
+spring:
+  # 数据库连接模块：用于连接 MySQL 中的农产品产销对接平台数据库。
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: your_mysql_username
+    password: your_mysql_password
+    # 关键配置：farm_system 是数据库名；如本机数据库名不同，需要同步修改。
+    url: jdbc:mysql://localhost:3306/farm_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+  servlet:
+    multipart:
+      # 文件上传模块：限制单个文件和单次请求的最大上传大小。
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+mybatis:
+  # MyBatis 模块：加载 resources/mapper 下的 XML SQL 映射文件。
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # 开发阶段打印 SQL，便于排查接口和数据库交互问题。
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 自动把数据库下划线字段映射为 Java 驼峰属性。
+    map-underscore-to-camel-case: true
+
+# 文件访问模块：上传文件生成访问链接时使用的后端基础地址。
+fileBaseUrl: http://localhost:9090

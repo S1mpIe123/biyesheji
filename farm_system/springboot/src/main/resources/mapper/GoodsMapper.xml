@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.GoodsMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Goods">
+        select goods.*,
+               category.name as categoryName,
+               supply.supplier_id as supplierId,
+               user.name as supplierName
+        from goods
+        left join category on goods.category_id = category.id
+        left join supply on goods.source_supply_id = supply.id
+        left join user on supply.supplier_id = user.id
+        <where>
+            <if test="name != null"> and goods.name like concat('%', #{name}, '%')</if>
+            <if test="categoryId != null"> and goods.category_id = #{categoryId}</if>
+            <!-- 供应商看板按自己的供应商品收口；管理员不传 supplierId 时仍查看全部商城商品。 -->
+            <if test="supplierId != null"> and supply.supplier_id = #{supplierId}</if>
+        </where>
+        <choose>
+            <when test="sortPrice != null and sortPrice == 'asc'">
+                order by goods.price asc, goods.id desc
+            </when>
+            <otherwise>
+                order by goods.id desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert" parameterType="com.example.entity.Goods" useGeneratedKeys="true">
+        insert into goods(id, name, img, descr, specials, price, unit, store, category_id, source_supply_id)
+        values (#{id}, #{name}, #{img}, #{descr}, #{specials}, #{price}, #{unit}, #{store}, #{categoryId}, #{sourceSupplyId})
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Goods">
+        update goods set name = #{name}, img = #{img}, descr = #{descr}, specials = #{specials}, price = #{price},
+        unit = #{unit}, store = #{store}, category_id = #{categoryId}, source_supply_id = #{sourceSupplyId}
+        where id = #{id} 
+    </update>
+
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.PurchaseDemandMapper">
+
+    <select id="selectAll" resultType="com.example.entity.PurchaseDemand">
+        select purchase_demand.*, user.name as buyerName, category.name as categoryName from purchase_demand
+        left join user on purchase_demand.buyer_id = user.id
+        left join category on purchase_demand.category_id = category.id
+        <where>
+            <if test="productName != null and productName != ''"> and purchase_demand.product_name like concat('%', #{productName}, '%')</if>
+            <if test="categoryId != null"> and purchase_demand.category_id = #{categoryId}</if>
+            <if test="buyerId != null"> and purchase_demand.buyer_id = #{buyerId}</if>
+            <if test="status != null and status != ''"> and purchase_demand.status = #{status}</if>
+        </where>
+        order by purchase_demand.id desc
+    </select>
+
+    <insert id="insert" parameterType="com.example.entity.PurchaseDemand" useGeneratedKeys="true" keyProperty="id">
+        insert into purchase_demand(buyer_id, product_name, category_id, total_quantity, quantity, unit, expected_price, receive_area, deadline, contact, status, create_time)
+        values (#{buyerId}, #{productName}, #{categoryId}, #{totalQuantity}, #{quantity}, #{unit}, #{expectedPrice}, #{receiveArea}, #{deadline}, #{contact}, #{status}, #{createTime})
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.PurchaseDemand">
+        update purchase_demand set buyer_id = #{buyerId}, product_name = #{productName}, category_id = #{categoryId},
+        total_quantity = #{totalQuantity}, quantity = #{quantity}, unit = #{unit}, expected_price = #{expectedPrice}, receive_area = #{receiveArea}, deadline = #{deadline},
+        contact = #{contact}, status = #{status}, create_time = #{createTime}
+        where id = #{id}
+    </update>
+
+</mapper>

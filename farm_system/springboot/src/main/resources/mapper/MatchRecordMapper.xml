@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.MatchRecordMapper">
+
+    <select id="selectAll" resultType="com.example.entity.MatchRecord">
+        select match_record.*,
+               match_record.delivery_address as deliveryAddress,
+               supply.product_name as supplyProductName,
+               purchase_demand.product_name as demandProductName,
+               coalesce(supply.product_name, purchase_demand.product_name) as productName,
+               responder.name as responseUserName,
+               coalesce(supplier.name, case when match_record.demand_id is not null then responder.name end) as supplierName,
+               coalesce(buyer.name, case when match_record.supply_id is not null then responder.name end) as buyerName,
+               coalesce(supply.supplier_id, case when match_record.demand_id is not null then match_record.response_user_id end) as supplierId,
+               coalesce(purchase_demand.buyer_id, case when match_record.supply_id is not null then match_record.response_user_id end) as buyerId
+        from match_record
+        left join supply on match_record.supply_id = supply.id
+        left join purchase_demand on match_record.demand_id = purchase_demand.id
+        left join user responder on match_record.response_user_id = responder.id
+        left join user supplier on supply.supplier_id = supplier.id
+        left join user buyer on purchase_demand.buyer_id = buyer.id
+        <where>
+            and match_record.status != '已隐藏'
+            <if test="responseUserId != null"> and match_record.response_user_id = #{responseUserId}</if>
+            <if test="relatedUserId != null"> and (match_record.response_user_id = #{relatedUserId} or supply.supplier_id = #{relatedUserId} or purchase_demand.buyer_id = #{relatedUserId})</if>
+            <if test="status != null and status != ''"> and match_record.status = #{status}</if>
+            <if test="productName != null and productName != ''"> and (supply.product_name like concat('%', #{productName}, '%') or purchase_demand.product_name like concat('%', #{productName}, '%'))</if>
+        </where>
+        order by match_record.id desc
+    </select>
+
+    <insert id="insert" parameterType="com.example.entity.MatchRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into match_record(supply_id, demand_id, response_user_id, quantity, unit, price, message, status, delivery_address, create_time)
+        values (#{supplyId}, #{demandId}, #{responseUserId}, #{quantity}, #{unit}, #{price}, #{message}, #{status}, #{deliveryAddress}, #{createTime})
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.MatchRecord">
+        update match_record set supply_id = #{supplyId}, demand_id = #{demandId}, response_user_id = #{responseUserId},
+        quantity = #{quantity}, unit = #{unit}, price = #{price}, message = #{message}, status = #{status},
+        delivery_address = #{deliveryAddress}, create_time = #{createTime}
+        where id = #{id}
+    </update>
+
+</mapper>

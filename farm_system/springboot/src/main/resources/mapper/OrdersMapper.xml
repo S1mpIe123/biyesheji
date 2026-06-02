@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.OrdersMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Orders">
+        select orders.*,
+        coalesce(orders.goods_name, goods.name) as goodsName,
+        coalesce(orders.goods_img, goods.img) as goodsImg,
+        goods.source_supply_id as sourceSupplyId,
+        supply.supplier_id as supplierId,
+        supplier.name as supplierName,
+        user.name as userName from orders
+        left join goods on orders.goods_id = goods.id
+        left join supply on goods.source_supply_id = supply.id
+        left join user supplier on supply.supplier_id = supplier.id
+        left join user on orders.user_id = user.id
+        <where>
+            and ifnull(orders.deleted, 0) = 0
+            <if test="orderNo != null"> and orders.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="userId != null"> and orders.user_id = #{userId}</if>
+            <if test="supplierId != null"> and supply.supplier_id = #{supplierId}</if>
+        </where>
+        order by orders.id desc
+    </select>
+
+    <insert id="insert" parameterType="com.example.entity.Orders" useGeneratedKeys="true">
+        insert into orders(id, order_no, goods_id, num, user_id, status, time, goods_name, goods_img, deleted)
+        values (#{id}, #{orderNo}, #{goodsId}, #{num}, #{userId}, #{status}, #{time}, #{goodsName}, #{goodsImg}, #{deleted})
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Orders">
+        update orders set order_no = #{orderNo}, goods_id = #{goodsId},
+        num = #{num}, user_id = #{userId}, status = #{status}, time = #{time},
+        goods_name = #{goodsName}, goods_img = #{goodsImg}, deleted = #{deleted}
+        where id = #{id} 
+    </update>
+
+</mapper>
